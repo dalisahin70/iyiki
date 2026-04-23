@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sürpriz</title>
+    <style>
+        /* 1. GENEL TASARIM VE HAREKETLİ ARKA PLAN */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Mobilde uzun listede üstten başlasın */
+            background: linear-gradient(-45deg, #fce4ec, #f3e5f5, #e1f5fe, #e8f5e9);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            padding: 40px 20px;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #5d4037;
+        }
+
+        header h1 {
+            font-size: 1.6rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        /* 2. KART YAPISI VE RESPONSIVE DÜZEN */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* Webde 3 sütun */
+            gap: 20px;
+            max-width: 900px; /* Webde daha geniş alan */
+            width: 100%;
+        }
+
+        /* MOBİL DÜZEN: KARTLAR ALT ALTA */
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr; /* Mobilde tek sütun */
+                max-width: 350px; /* Mobilde çok yayılmasın */
+            }
+            body {
+                overflow-y: auto; /* Mobilde kartlar uzarsa kaydırılabilsin */
+            }
+        }
+
+        .card {
+            min-height: 180px; /* Yazıların sığması için yükseklik artırıldı */
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .card.is-flipped .card-inner { transform: rotateY(180deg); }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .card-front {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            font-size: 2.5rem;
+        }
+
+        .card-back {
+            background: #ffffff;
+            color: #444;
+            transform: rotateY(180deg);
+            font-size: 1rem; /* Yazı boyutu okunaklı olması için artırıldı */
+            font-weight: 500;
+            line-height: 1.5;
+            text-align: center;
+            border: 1px solid #eee;
+        }
+
+        /* 3. FİNAL OVERLAY */
+        #final-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 1s ease;
+        }
+
+        #final-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .final-content {
+            background: #fff;
+            padding: 50px 30px;
+            border-radius: 40px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+            max-width: 90%;
+        }
+
+        .final-content h2 {
+            color: #d81b60;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .confetti {
+            position: fixed;
+            z-index: 10000;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+<audio id="bg-music" loop>
+    <source src="fikrimin_ince_gulu.mp3" type="audio/mpeg">
+</audio>
+    <header>
+        <h1>Senin için küçük bir sürprizim var...</h1>
+    </header>
+
+    <div class="grid-container">
+        <div class="card" onclick="openCard(this)">
+            <div class="card-inner">
+                <div class="card-front">☕</div>
+                <div class="card-back">Mükemmel bir hayatımız olmayabilir ama seninle olduğum her an, elimizdekiler bana fazlasıyla yetiyor.</div>
+            </div>
+        </div>
+        <div class="card" onclick="openCard(this)">
+            <div class="card-inner">
+                <div class="card-front">☁️</div>
+                <div class="card-back">Bazen aynı odada, hiç konuşmadan otururken bile sadece senin varlığını hissetmek bana huzur veriyor.</div>
+            </div>
+        </div>
+        <div class="card" onclick="openCard(this)">
+            <div class="card-inner">
+                <div class="card-front">🏡</div>
+                <div class="card-back">Dışarıdaki gürültü ne olursa olsun, seninle kurduğumuz o sakin ve sessiz dünyayı hiçbir şeye değişmem.</div>
+            </div>
+        </div>
+        <div class="card" onclick="openCard(this)">
+            <div class="card-inner">
+                <div class="card-front">⚓</div>
+                <div class="card-back">Sen sadece eşim değil; bu hayattaki en güvenli limanım, en dürüst sırdaşım ve en yakın dostumsun.</div>
+            </div>
+        </div>
+        <div class="card" onclick="openCard(this)">
+            <div class="card-inner">
+                <div class="card-front">⌛</div>
+                <div class="card-back">Zaman geçip her şey değişse de, sana her baktığımda hala o ilk günkü güveni ve içimi ısıtan sevgiyi buluyorum.</div>
+            </div>
+        </div>
+        <div class="card" onclick="openCard(this)">
+            <div class="card-inner">
+                <div class="card-front">❤️</div>
+                <div class="card-back">Bazen hayatın içinde durup sana bakarken, iyi ki hayatımı seninle birleştirmişim diyorum; sen bu dünyadaki en büyük "iyiki"msin.</div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="final-overlay">
+        <div class="final-content">
+		<div id="music-indicator" style="font-size: 1.5rem; margin-bottom: 10px; display: none;">
+    🎵 <span style="font-size: 0.8rem; vertical-align: middle;">sesi aç...</span>
+</div>
+            <h2>SENİ ÇOK SEVİYORUM ❤️</h2>
+            <p style="color: #888;">iyi ki varsın canım karım</p>
+        </div>
+    </div>
+
+    <script>
+        let openedCards = 0;
+        const totalCards = 6;
+
+function openCard(cardElement) {
+            // 1. Kart daha önce açılmadıysa işlem yap
+            if (!cardElement.classList.contains('is-flipped')) {
+                cardElement.classList.add('is-flipped');
+                openedCards++;
+                createConfetti(25); // Her tıklandığında konfeti patlat
+
+                // 2. Eğer tüm kartlar açıldıysa
+                if (openedCards === totalCards) {
+                    setTimeout(() => {
+                        // MÜZİĞİ BAŞLAT (Tam 10 saniye sonra finalle birlikte)
+                        const music = document.getElementById('bg-music');
+                        if (music) {
+                            music.play().catch(e => console.log("Müzik için etkileşim hatası"));
+                        }
+
+                        // FİNAL EKRANINI VE MÜZİK SİMGESİNİ GÖSTER
+                        document.getElementById('final-overlay').classList.add('visible');
+                        document.getElementById('music-indicator').style.display = 'block';
+
+                        // SÜREKLİ KONFETİ YAĞMURU
+                        const finalConfetti = setInterval(() => {
+                            if(document.getElementById('final-overlay').classList.contains('visible')){
+                                createConfetti(10); // Buradaki 10, her saniye düşen parça sayısıdır
+                            } else {
+                                clearInterval(finalConfetti);
+                            }
+                        }, 700);
+                    }, 10000); // 10000 ms = 10 Saniye Bekleme
+                }
+            }
+        }
+
+        function createConfetti(count) {
+            const symbols = ['❤️', '✨', '🌸'];
+            for (let i = 0; i < count; i++) {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.top = '-20px';
+                c.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                document.body.appendChild(c);
+
+                c.animate([
+                    { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(110vh) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                ], { duration: Math.random() * 3000 + 3000, easing: 'linear' }).onfinish = () => c.remove();
+            }
+        }
+    </script>
+</body>
+</html>
